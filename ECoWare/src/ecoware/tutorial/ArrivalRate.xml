@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecoware>
+	<ecowareAccessManagerUrl>localhost</ecowareAccessManagerUrl>
+	<Calculator>
+		<name>ArrivalRate</name>
+		<subscriptID>SystemInfo</subscriptID>
+		<publicationID>ArrivalRate_System</publicationID>
+		<computation>
+			<intervalUnit>minutes</intervalUnit>
+			<intervalValue>1</intervalValue>
+			<outputUnit>seconds</outputUnit>
+			<outputValue>10</outputValue>
+		</computation>
+	</Calculator>
+</ecoware>
