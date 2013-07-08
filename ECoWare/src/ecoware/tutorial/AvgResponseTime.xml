@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecoware>
+	<ecowareAccessManagerUrl>localhost</ecowareAccessManagerUrl>
+	<Calculator>
+		<name>AvgRT</name>
+		<subscriptID>BrowserInfo</subscriptID>
+		<publicationID>AvgRT_Browser</publicationID>
+		<computation>
+			<intervalUnit>seconds</intervalUnit>
+			<intervalValue>20</intervalValue>
+			<outputUnit>seconds</outputUnit>
+			<outputValue>5</outputValue>
+		</computation>
+	</Calculator>
+</ecoware>
