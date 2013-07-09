@@ -71,9 +71,8 @@ public class HPFilter extends StandardKPIFilter {
 		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
 		
 		String expression = "SELECT * " +
-			"FROM " + eventName + ".win:length(1)" +
-			"WHERE originID = '" + getSubscriptionIDs().get(0) + "' " +
-				"AND " + attributeName + " > " + cutoff;
+			"FROM " + eventName + ".win:length(1) " +
+			"WHERE " + attributeName + " > " + cutoff;
 
 		EPStatement statement = epService.getEPAdministrator().createEPL(expression);
 		

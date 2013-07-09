@@ -31,7 +31,7 @@ import com.espertech.esper.client.EPStatement;
  * or a more detailed presentation of these concepts, see the provided <a href="">tutorials </a>section of the ECoWare documentation.
  *
  */
-public class Aggregator extends KPIManager {
+public class Aggregator_Draft extends KPIManager {
 	
 	private String aggregatorName;
 	private String primaryEventName;
@@ -49,7 +49,7 @@ public class Aggregator extends KPIManager {
 	 * @param busServer the hostname on which the bus server is running
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
-	public Aggregator(Element xmlElement, String busServer, Configuration esperConfiguration) throws Exception {
+	public Aggregator_Draft(Element xmlElement, String busServer, Configuration esperConfiguration) throws Exception {
 
 		super(xmlElement, busServer, esperConfiguration);
 		
@@ -139,7 +139,7 @@ public class Aggregator extends KPIManager {
 		ArrayList<String> secondEventSpecs;
 		for(String secondEvent: secondEvents){
 			secondEventSpecs = (ArrayList<String>)secondaryEventsList.get(secondEvent);
-			esperStatement += ", " + secondEvent + ".win:time(" + secondEventSpecs.get(1) + " " + secondEventSpecs.get(2) + ") AS " + secondEventSpecs.get(3);
+			esperStatement += ", " + secondEvent + ".win:time(" + secondEventSpecs.get(2) + " " + secondEventSpecs.get(1) + ") AS " + secondEventSpecs.get(3);
 		}
 		
 		esperStatement += " WHERE " + primaryEventName + ".originID = '" + getSubscriptionIDs().get(0) + "'";

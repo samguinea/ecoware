@@ -72,8 +72,7 @@ public class LPFilter extends StandardKPIFilter {
 		
 		String expression = "SELECT * " +
 			"FROM " + eventName + ".win:length(1)" +
-			"WHERE originID = '" + getSubscriptionIDs().get(0) + "' " +
-				"AND " + attributeName + " < " + cutoff;
+			"WHERE " + attributeName + " < " + cutoff;
 
 		EPStatement statement = epService.getEPAdministrator().createEPL(expression);
 

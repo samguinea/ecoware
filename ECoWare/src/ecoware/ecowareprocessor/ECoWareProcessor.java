@@ -95,7 +95,7 @@ public class ECoWareProcessor {
 		NodeList filterList = confRoot.getElementsByTagName("Filter");
 		for(int i=0; i<filterList.getLength(); i++){
 			kpiElement = (Element) filterList.item(i);
-			elementName = kpiElement.getElementsByTagName("filter_name").item(0).getTextContent();
+			elementName = kpiElement.getElementsByTagName("name").item(0).getTextContent();
 			//System.out.print("Element name: " + elementName);
 			kpi = createFilter(elementName, kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
@@ -117,7 +117,7 @@ public class ECoWareProcessor {
 		for(int i=0; i<aggregatorList.getLength(); i++){
 			kpiElement = (Element) aggregatorList.item(i);
 			//System.out.println("Element name: " + elementName);
-			kpi = new Aggregator(kpiElement, busServer, esperConfiguration);
+			kpi = new Aggregator_Draft(kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
 		}
