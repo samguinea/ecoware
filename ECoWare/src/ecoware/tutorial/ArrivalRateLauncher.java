@@ -18,7 +18,5 @@ public class ArrivalRateLauncher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

@@ -2,12 +2,10 @@ package ecoware.ecowareprocessor.kpi.calculators;
 
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareaccessmanager.ECoWareEventType;
-
+import ecoware.util.*;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -68,7 +66,6 @@ import com.espertech.esper.client.EPStatement;
  *
  */
 public class ReliabilityCalculator extends StandardKPICalculator {
-
 	private String timeoutUnit;
 	private double timeoutValue;
 	
@@ -80,8 +77,6 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public ReliabilityCalculator(Element xmlElement, String busServer, Configuration esperConfiguration) {
-
-		//XML element parsing
 		super(xmlElement, busServer, esperConfiguration);
 		
 		timeoutUnit = xmlElement.getElementsByTagName("timeoutUnit").item(0).getTextContent();
@@ -93,20 +88,16 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 	 * This method actually starts the "ReliabilityCalculator" KPI processing.<br/>
 	 */
 	public void launch() {
-		
-		System.out.println("---");
-        System.out.println("Reliability");
-        System.out.println("Initializing calculator...");
+		Logger.logInfo("---");
+		Logger.logInfo("Reliability");
+		Logger.logInfo("Initializing calculator...");
 		
         //ESPER configuration
 		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
 
         //map for StartTime and EndTime events
 		Map<String, Object> timeEventMap = new HashMap<String, Object>();
-		
-		//timeEventMap.put("originID", String.class);
 		timeEventMap.put("key", String.class);
-		//timeEventMap.put("processNumber", int.class);
 		timeEventMap.put("timestamp", long.class);
 		
 		epService.getEPAdministrator().getConfiguration().addEventType(ECoWareEventType.START_TIME.getValue(), timeEventMap);
@@ -114,9 +105,7 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 
 		//KPI map for filters
 	    Map<String, Object> filterMap = new HashMap<String, Object>();
-
 		filterMap.put("timestamp", long.class);
-	    //filterMap.put("originID", String.class);
 	    filterMap.put("value", double.class);
 
 		epService.getEPAdministrator().getConfiguration().addEventType(ECoWareEventType.RELIABILITY_EVENT.getValue(), filterMap);
@@ -153,10 +142,7 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 			"OUTPUT SNAPSHOT EVERY " + getOutputValue() + " " + getOutputUnit();
 		
 		EPStatement eplStatement = epService.getEPAdministrator().createEPL(esperStatement);
-		
-		//listener linking
 		eplStatement.addListener(new KPIEventListener(ECoWareEventType.RELIABILITY_EVENT.getValue(), getPublicationID(), getBusServer()));
-
-    	System.out.println("Calculator initialized");
+		Logger.logInfo("Calculator initialized");
 	}
 }

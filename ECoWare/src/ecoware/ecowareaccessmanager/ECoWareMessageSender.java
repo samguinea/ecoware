@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.HashMap;
-
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -20,17 +19,13 @@ import com.rabbitmq.client.ConnectionFactory;
  *
  */
 public class ECoWareMessageSender {
-	
-	
 	private String host;
 	private String publishingKey;
 	private final String exchangeType = "direct";
 	private final String exchangeName = "ecoware";
-	
 	private ConnectionFactory factory;
 	private Connection connection;
 	private Channel channel;
-	
 	private BasicProperties prop;
 	
 	/**
@@ -134,7 +129,6 @@ public class ECoWareMessageSender {
 			msgHeader.put("timestamp", System.currentTimeMillis());
 			
 			prop = new BasicProperties.Builder().messageId(publishingKey).timestamp(new Date()).headers(msgHeader).build();
-			
 			HashMap<String, Object> msgMap = new HashMap<String, Object>();
 			msgMap.put(publishingKey, message);
 			
@@ -269,7 +263,5 @@ public class ECoWareMessageSender {
 	 */
 	public void setPublishingKey(String publishingKey) {
 		this.publishingKey = publishingKey;
-		
 	}
-
 }

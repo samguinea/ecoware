@@ -2,9 +2,8 @@ package ecoware.ecowareprocessor.kpi.filters;
 
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareaccessmanager.ECoWareEventType;
-
+import ecoware.util.*;
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -37,7 +36,6 @@ import com.espertech.esper.client.EPStatement;
  *
  */
 public class LPFilter extends StandardKPIFilter {
-
 	private String eventName;
 	private String attributeName;
 	private double cutoff;
@@ -50,7 +48,6 @@ public class LPFilter extends StandardKPIFilter {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public LPFilter(Element xmlElement, String busServer, Configuration esperConfiguration) {
-
 		super(xmlElement, busServer, esperConfiguration);
 		
 		eventName = xmlElement.getElementsByTagName("eventName").item(0).getTextContent();
@@ -62,10 +59,9 @@ public class LPFilter extends StandardKPIFilter {
 	/**
 	 * This method actually starts the "Low Pass" filter.<br/>
 	 */
-	public void launch() {
-		
-		System.out.println("---");
-		System.out.println("Initializing low-pass filter...");
+	public void launch() {		
+		Logger.logInfo("---");
+		Logger.logInfo("Initializing low-pass filter...");
 		
         //ESPER configuration
 		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
@@ -75,9 +71,7 @@ public class LPFilter extends StandardKPIFilter {
 			"WHERE " + attributeName + " < " + cutoff;
 
 		EPStatement statement = epService.getEPAdministrator().createEPL(expression);
-
 		statement.addListener(new KPIEventListener(ECoWareEventType.getEventType(eventName).getValue(), getPublicationID(), getBusServer()));
-		
-		System.out.println("Filter initialized");
+		Logger.logInfo("Filter initialized");
 	}
 }

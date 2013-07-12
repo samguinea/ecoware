@@ -6,7 +6,6 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -23,8 +22,6 @@ import com.rabbitmq.client.ShutdownSignalException;
  * for the arrive of these messages. 
  */
 public class ECoWareMessageReceiver {
-	
-	
 	private String host;
 	private ArrayList<String> subscribeKeys;
 	private final String exchangeType = "direct";
@@ -54,7 +51,6 @@ public class ECoWareMessageReceiver {
 	 */
 	public ECoWareMessageReceiver(String host, ArrayList<String> subscribeKeys) {
 		this.host = host;
-		
 		if(subscribeKeys == null)
 			this.subscribeKeys = null;
 		else
@@ -72,7 +68,6 @@ public class ECoWareMessageReceiver {
 		createConnection();
 		this.queueName = routeSetup();
 		createConsume(this.queueName);
-		
 		rt = new ReceiverThread(this);
 		t = new Thread(rt);
 		t.start();
@@ -165,7 +160,6 @@ public class ECoWareMessageReceiver {
 		
 		if(ECoWareEventType.getEventType(hdr.get("eventType").toString()) != ECoWareEventType.CUSTOM_EVENT){
 			ECoWareEventType eventType = ECoWareEventType.getEventType(hdr.get("eventType").toString());
-			
 			if(eventType.equals(ECoWareEventType.SECONDAY_AGGREGATION)) eventId = (int) hdr.get("eventID");
 			msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventType, eventId);
 		}
@@ -174,7 +168,6 @@ public class ECoWareMessageReceiver {
 			eventId = (int) hdr.get("eventID");
 			msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventName, eventId);
 		}
-		
 		return msg;
 	}
 	
@@ -236,7 +229,6 @@ public class ECoWareMessageReceiver {
 		for (ECoWareMessageListener listener : this.listeners) {
 			listener.notify(msg);
 		}
-
 	}
 	
 	private class ReceiverThread implements Runnable{
@@ -262,6 +254,5 @@ public class ECoWareMessageReceiver {
 		{
 			stop = true;
 		}
-		
 	}
 }

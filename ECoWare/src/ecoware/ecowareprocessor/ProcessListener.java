@@ -1,12 +1,11 @@
 package ecoware.ecowareprocessor;
 
 import java.util.HashMap;
-
 import com.espertech.esper.client.EPServiceProvider;
-
 import ecoware.ecowareaccessmanager.ECoWareEventType;
 import ecoware.ecowareaccessmanager.ECoWareMessage;
 import ecoware.ecowareaccessmanager.ECoWareMessageListener;
+import ecoware.util.*;
 
 /**
  * 
@@ -42,8 +41,7 @@ public class ProcessListener implements ECoWareMessageListener {
 			eventType = event.getEventType().getValue();
 		else
 			eventType = event.getEventName();
-		//System.out.println("Event type: " + eventType);
+		Logger.logDebug("Event " + eventType + " notified!");
 		esperSP.getEPRuntime().sendEvent(esperEvent, eventType);
 	}
-
 }

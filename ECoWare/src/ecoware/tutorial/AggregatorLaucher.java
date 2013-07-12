@@ -18,7 +18,5 @@ public class AggregatorLaucher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

@@ -18,7 +18,5 @@ public class FilteredAvgRTLauncher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

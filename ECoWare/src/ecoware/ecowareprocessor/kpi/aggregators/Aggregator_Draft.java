@@ -3,16 +3,14 @@ package ecoware.ecowareprocessor.kpi.aggregators;
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareprocessor.kpi.KPIManager;
 import ecoware.ecowareaccessmanager.ECoWareEventType;
-
+import ecoware.util.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -31,8 +29,7 @@ import com.espertech.esper.client.EPStatement;
  * or a more detailed presentation of these concepts, see the provided <a href="">tutorials </a>section of the ECoWare documentation.
  *
  */
-public class Aggregator_Draft extends KPIManager {
-	
+public class Aggregator_Draft extends KPIManager {	
 	private String aggregatorName;
 	private String primaryEventName;
 	private String secondaryEventName;
@@ -50,7 +47,6 @@ public class Aggregator_Draft extends KPIManager {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public Aggregator_Draft(Element xmlElement, String busServer, Configuration esperConfiguration) throws Exception {
-
 		super(xmlElement, busServer, esperConfiguration);
 		
 		aggregatorName = xmlElement.getElementsByTagName("name").item(0).getTextContent();
@@ -70,12 +66,6 @@ public class Aggregator_Draft extends KPIManager {
 			eventSpec.add(secondaryEventName);
 			secondaryEventsList.put(secondaryEventName, eventSpec);
 		}
-//		secondaryEventName = xmlElement.getElementsByTagName("secondaryEventName").item(0).getTextContent();
-//
-//		Element secondaryEvent = (Element) xmlElement.getElementsByTagName("secondaryEvent").item(0);
-//		
-//		secondaryEventIntervalUnit = secondaryEvent.getElementsByTagName("intervalUnit").item(0).getTextContent();
-//		secondaryEventIntervalValue = Integer.parseInt(secondaryEvent.getElementsByTagName("intervalValue").item(0).getTextContent());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -84,31 +74,30 @@ public class Aggregator_Draft extends KPIManager {
 	 * This method actually starts the "Aggregator" KPI processing.<br/>
 	 */
 	public void launch() {
-
-		System.out.println("---");
-		System.out.println("Initializing aggregator " + aggregatorName + "...");
+		Logger.logInfo("---");
+		Logger.logInfo("Initializing aggregator " + aggregatorName + "...");
 		
 		if(DEBUG_MODE){
-			System.out.println("PubID = " + getPublicationID());
+			Logger.logDebug("PubID = " + getPublicationID());
 			int i=0;
 			for(String subid: getSubscriptionIDs()){
-				System.out.println("SubId" + i + ": " + subid);
+				Logger.logDebug("SubId" + i + ": " + subid);
 				i++;
 			}
 
-			System.out.println("PrimaryEvent: " + primaryEventName);
-			System.out.println("PrimaryEvent SubscriptID: " + getSubscriptionIDs().get(0));
+			Logger.logDebug("PrimaryEvent: " + primaryEventName);
+			Logger.logDebug("PrimaryEvent SubscriptID: " + getSubscriptionIDs().get(0));
 
-			System.out.println("Numero secondary events: " + secondaryEvents.getLength());
-			System.out.println("Numero secondary events: " + secondaryEventsList.size());
+			Logger.logDebug("N. secondary events: " + secondaryEvents.getLength());
+			Logger.logDebug("N. secondary events: " + secondaryEventsList.size());
 
 			Set<String> info = secondaryEventsList.keySet();
 			ArrayList<String> tmpList;
 			for(String secondEvent: info){
-				System.out.println("Evento: " + secondEvent);
+				Logger.logDebug("Event: " + secondEvent);
 				tmpList = (ArrayList<String>)secondaryEventsList.get(secondEvent);
 				for(String tmp: tmpList){
-					System.out.println("-> " + tmp);
+					Logger.logDebug("-> " + tmp);
 				}
 			}
 		}
@@ -128,14 +117,14 @@ public class Aggregator_Draft extends KPIManager {
 		}
 		
 		//EPL creation
-		for(String secondEvent: secondEvents){ // Non necessario perchè integro "nome evento + pub_id" nel EventName al posto del semplice copia di EventType
+		for(String secondEvent: secondEvents){ 
 			if(secondEvent.equals(primaryEventName))
 				((ArrayList<String>)secondaryEventsList.get(secondEvent)).set(((ArrayList<String>)secondaryEventsList.get(secondEvent)).size() - 1, "Correlated_"+secondEvent);
 		}
 
 		// ESPER statement generation
 		String esperStatement = "SELECT * FROM " + primaryEventName + " AS " + primaryEventName + " UNIDIRECTIONAL";
-		//ciclo su i veri secondary_events
+
 		ArrayList<String> secondEventSpecs;
 		for(String secondEvent: secondEvents){
 			secondEventSpecs = (ArrayList<String>)secondaryEventsList.get(secondEvent);
@@ -143,17 +132,15 @@ public class Aggregator_Draft extends KPIManager {
 		}
 		
 		esperStatement += " WHERE " + primaryEventName + ".originID = '" + getSubscriptionIDs().get(0) + "'";
-		// altro ciclo
+
 		for(String secondEvent: secondEvents){
 			secondEventSpecs = (ArrayList<String>)secondaryEventsList.get(secondEvent);
 			esperStatement += " AND " + secondEventSpecs.get(3) + ".originID = '" + secondEventSpecs.get(0) + "'";
 		}
 		
-		System.out.println("Query: " + esperStatement);
-		EPStatement eplStatement = epService.getEPAdministrator().createEPL(esperStatement);
-		
+		Logger.logDebug("Query: " + esperStatement);
+		EPStatement eplStatement = epService.getEPAdministrator().createEPL(esperStatement);		
 		eplStatement.addListener(new KPIEventListener(ECoWareEventType.AGGREGATOR_EVENT.getValue(), getPublicationID(), getBusServer()));
-
-    	System.out.println("Aggregator initialized");
+		Logger.logInfo("Aggregator initialized");
 	}
 }

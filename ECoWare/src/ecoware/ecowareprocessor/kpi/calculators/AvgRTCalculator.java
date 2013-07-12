@@ -2,12 +2,10 @@ package ecoware.ecowareprocessor.kpi.calculators;
 
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareaccessmanager.ECoWareEventType;
-
+import ecoware.util.*;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -73,8 +71,6 @@ public class AvgRTCalculator extends StandardKPICalculator {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public AvgRTCalculator(Element xmlElement, String busServer, Configuration esperConfiguration) {
-
-		//XML element parsing
 		super(xmlElement, busServer, esperConfiguration);
 	}
 
@@ -82,21 +78,16 @@ public class AvgRTCalculator extends StandardKPICalculator {
 	/**
 	 * This method actually starts the "AvgRTCalculator" KPI processing.<br/>
 	 */
-	public void launch() {
-		
-		System.out.println("---");
-        System.out.println("Average Response Time");
-        System.out.println("Initializing calculator...");
+	public void launch() {		
+		Logger.logInfo("---");
+		Logger.logInfo("Average Response Time");
+		Logger.logInfo("Initializing calculator...");
 		
         //ESPER configuration
 		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
 
         //map for StartTime and EndTime events
-		Map<String, Object> timeEventMap = new HashMap<String, Object>();
-		
-		/*timeEventMap.put("originID", String.class);
-		timeEventMap.put("processNumber", int.class);
-		timeEventMap.put("timestamp", long.class);*/
+		Map<String, Object> timeEventMap = new HashMap<String, Object>();		
 		timeEventMap.put("key", String.class);
 		timeEventMap.put("value", long.class);
 		
@@ -105,8 +96,6 @@ public class AvgRTCalculator extends StandardKPICalculator {
 
 		//KPI map for filters
 	    Map<String, Object> filterMap = new HashMap<String, Object>();
-
-	    //filterMap.put("originID", String.class);
 	    filterMap.put("timestamp", long.class);
 	    filterMap.put("avg", double.class);
 	    filterMap.put("stddev", long.class);
@@ -122,10 +111,7 @@ public class AvgRTCalculator extends StandardKPICalculator {
 			"OUTPUT SNAPSHOT EVERY " + getOutputValue() + " " + getOutputUnit();
 
 		EPStatement eplStatement = epService.getEPAdministrator().createEPL(esperStatement);
-		
-		//listener linking
 		eplStatement.addListener(new KPIEventListener(ECoWareEventType.AVGRT_EVENT.getValue(), getPublicationID(), getBusServer()));
-
-    	System.out.println("Calculator initialized");
+		Logger.logInfo("Calculator initialized");
 	}
 }

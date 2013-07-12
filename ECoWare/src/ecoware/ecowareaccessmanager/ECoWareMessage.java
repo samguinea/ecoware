@@ -59,7 +59,6 @@ public class ECoWareMessage {
 		this.eventId = eventId;
 	}
 	
-	
 	/**
 	 * Returns the publisher ID.
 	 * @return the publisherID

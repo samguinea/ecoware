@@ -18,7 +18,5 @@ public class CustomKpiLauncher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

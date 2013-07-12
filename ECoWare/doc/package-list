@@ -5,3 +5,4 @@ ecoware.ecowareprocessor.kpi
 ecoware.ecowareprocessor.kpi.aggregators
 ecoware.ecowareprocessor.kpi.calculators
 ecoware.ecowareprocessor.kpi.filters
+ecoware.util

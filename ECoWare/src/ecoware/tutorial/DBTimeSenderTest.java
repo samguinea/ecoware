@@ -2,7 +2,6 @@ package ecoware.tutorial;
 
 import java.io.IOException;
 import java.util.HashMap;
-
 import ecoware.ecowareaccessmanager.ECoWareEventType;
 import ecoware.ecowareaccessmanager.ECoWareMessageSender;
 
@@ -12,7 +11,6 @@ public class DBTimeSenderTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
 		System.out.println("Producer started...");
 		HashMap<String, Object> mapMsg = new HashMap<String, Object>();
 		ECoWareMessageSender sender;
@@ -63,7 +61,5 @@ public class DBTimeSenderTest {
 			e1.printStackTrace();
 		}
 		System.out.println("Producer finished...");	
-		
 	}
-
 }

@@ -18,7 +18,5 @@ public class AvgRTLauncher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
-
 }

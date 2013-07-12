@@ -2,23 +2,20 @@ package ecoware.ecowareprocessor;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
-
 import ecoware.ecowareprocessor.kpi.*;
 import ecoware.ecowareprocessor.kpi.aggregators.*;
 import ecoware.ecowareprocessor.kpi.calculators.*;
 import ecoware.ecowareprocessor.kpi.filters.*;
 import ecoware.ecowareaccessmanager.*;
+import ecoware.util.*;
 
 /**
  * @author Armando Varriale
@@ -29,8 +26,7 @@ import ecoware.ecowareaccessmanager.*;
  * (related to your KPIs configuration or the KPIs set you need for your system analysis), and then start 
  * the created object to begin system probing.
  */
-public class ECoWareProcessor {
-	
+public class ECoWareProcessor {	
 	private InputStream configurationFile;
 	private String busServer;
 	private ECoWareMessageReceiver receiver;
@@ -45,10 +41,6 @@ public class ECoWareProcessor {
 	private KPIManager kpi;
 	
 	
-//	public ECoWareProcess() throws Exception{
-//		this(null);
-//	}
-
 	/**
 	 * Constructs a new ECoWareProcess with the supplied configuration file. The configuration file is an XML file 
 	 * which has all the information regarding to the processor to build as explained in the ECoWare project Wiki. 
@@ -63,8 +55,7 @@ public class ECoWareProcessor {
 		docFactory = DocumentBuilderFactory.newInstance();
 		docBuilder = docFactory.newDocumentBuilder();
 		configurationDocument = docBuilder.parse(this.configurationFile);
-		subscriptions = new ArrayList<String>(0);
-		
+		subscriptions = new ArrayList<String>(0);		
 		Element confRoot = configurationDocument.getDocumentElement();
 		busServer = confRoot.getElementsByTagName("ecowareAccessManagerUrl").item(0).getTextContent();
 		esperConfiguration = new Configuration();
@@ -75,7 +66,7 @@ public class ECoWareProcessor {
 		for(int i=0; i<kpiList.getLength(); i++){
 			kpiElement = (Element) kpiList.item(i);
 			elementName = kpiElement.getElementsByTagName("name").item(0).getTextContent();
-			//System.out.print("Element name: " + elementName);
+			Logger.logDebug("Element: " + elementName + " created!");
 			kpi = createCalculator(elementName, kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
@@ -85,7 +76,7 @@ public class ECoWareProcessor {
 		NodeList customList = confRoot.getElementsByTagName("Custom_Calculator");
 		for(int i=0; i<customList.getLength(); i++){
 			kpiElement = (Element) customList.item(i);
-			//System.out.print("Element name: " + elementName);
+			Logger.logDebug("Element: " + kpiElement.getElementsByTagName("calculator_name").item(0).getTextContent() + " created!");
 			kpi = new CustomKPICalculator(kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
@@ -96,7 +87,7 @@ public class ECoWareProcessor {
 		for(int i=0; i<filterList.getLength(); i++){
 			kpiElement = (Element) filterList.item(i);
 			elementName = kpiElement.getElementsByTagName("name").item(0).getTextContent();
-			//System.out.print("Element name: " + elementName);
+			Logger.logDebug("Element: " + elementName + " created!");
 			kpi = createFilter(elementName, kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
@@ -106,7 +97,7 @@ public class ECoWareProcessor {
 		NodeList customFilterList = confRoot.getElementsByTagName("Custom_Filter");
 		for(int i=0; i<customFilterList.getLength(); i++){
 			kpiElement = (Element) customFilterList.item(i);
-			//System.out.print("Element name: " + elementName);
+			Logger.logDebug("Element: " + kpiElement.getElementsByTagName("filter_name").item(0).getTextContent() + " created!");
 			kpi = new CustomKPIFilter(kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
@@ -116,12 +107,11 @@ public class ECoWareProcessor {
 		NodeList aggregatorList = confRoot.getElementsByTagName("Aggregator");
 		for(int i=0; i<aggregatorList.getLength(); i++){
 			kpiElement = (Element) aggregatorList.item(i);
-			//System.out.println("Element name: " + elementName);
+			Logger.logDebug("Element: " + kpiElement.getElementsByTagName("name").item(0).getTextContent() + " created!");
 			kpi = new Aggregator_Draft(kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
-		}
-		
+		}		
 		receiver = new ECoWareMessageReceiver(busServer, subscriptions);
 		receiver.addECoWareMessageListener(new ProcessListener(esperServiceProvider));
 	}
@@ -135,7 +125,7 @@ public class ECoWareProcessor {
 	}
 	
 	// Create calculators
-	private KPIManager createCalculator(String elementName, Element kpiElement, String busServer, Configuration esperConfiguration) {
+	private KPIManager createCalculator(String elementName, Element kpiElement, String busServer, Configuration esperConfiguration) throws Exception {
 		KPIManager tmpKPI = null;
 		switch (elementName) {
 			case "AvgRT": // Response Time Calculator
@@ -150,14 +140,14 @@ public class ECoWareProcessor {
 				tmpKPI = new ReliabilityCalculator(kpiElement, busServer, esperConfiguration);
 				break;
 				
-			default:
-				break;
+			default: //error
+				throw new Exception("Error: calculator not found or wrong calculator type! Check the  calculator type into the configuration file.");
 		}
 		return tmpKPI;
 	}
 	
 	// Create filters
-	private KPIManager createFilter(String elementName, Element kpiElement, String busServer, Configuration esperConfiguration) {
+	private KPIManager createFilter(String elementName, Element kpiElement, String busServer, Configuration esperConfiguration) throws Exception {
 		KPIManager tmpKPI = null;
 		switch (elementName) {
 		case "HPFilter": // High Pass Filter
@@ -168,12 +158,11 @@ public class ECoWareProcessor {
 			tmpKPI = new LPFilter(kpiElement, busServer, esperConfiguration);
 			break;
 
-		default: 
-			break;
+		default: //error
+			throw new Exception("Error: filter not found or wrong filter type! Check the filter type into the configuration file.");
 		}
 		return tmpKPI;
-	}
-	
+	}	
 
 	/**
 	 * Return the configuration file used to generate the processor.
@@ -183,27 +172,11 @@ public class ECoWareProcessor {
 		return configurationFile;
 	}
 
-//	/**
-//	 * Sets the configuration file used to generate the processor.
-//	 * @param configurationFile the configuration file to set
-//	 */
-//	public void setConfigurationFile(InputStream configurationFile) {
-//		this.configurationFile = configurationFile;
-//	}
-
 	/**
 	 * Return the hostname on which the bus server is running.
 	 * @return the ECoWare bus server
 	 */
 	public String getBusServer() {
 		return busServer;
-	}
-
-//	/**
-//	 * @param busServer the url to set for the ECoWare bus server
-//	 */
-//	public void setBusServer(String busServer) {
-//		this.busServer = busServer;
-//	}
-	
+	}	
 }

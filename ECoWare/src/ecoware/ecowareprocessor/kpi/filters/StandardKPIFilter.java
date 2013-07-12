@@ -1,9 +1,7 @@
 package ecoware.ecowareprocessor.kpi.filters;
 
 import ecoware.ecowareprocessor.kpi.KPIManager;
-
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 
 /**
@@ -24,8 +22,7 @@ public abstract class StandardKPIFilter extends KPIManager {
 	 * @param busServer the hostname on which the bus server is running
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
-	public StandardKPIFilter(Element xmlElement, String busServer, Configuration esperConfiguration) {
-		
+	public StandardKPIFilter(Element xmlElement, String busServer, Configuration esperConfiguration) {		
 		super(xmlElement, busServer, esperConfiguration);
 	}
 }

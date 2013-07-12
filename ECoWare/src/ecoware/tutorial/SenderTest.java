@@ -2,7 +2,6 @@ package ecoware.tutorial;
 
 import java.io.IOException;
 import java.util.HashMap;
-
 import ecoware.ecowareaccessmanager.ECoWareEventType;
 import ecoware.ecowareaccessmanager.ECoWareMessageSender;
 
@@ -14,7 +13,6 @@ import ecoware.ecowareaccessmanager.ECoWareMessageSender;
 public class SenderTest {
 
 	public static void main(String[] args) {
-		
 		System.out.println("Producer started...");
 		HashMap<String, Object> mapMsg = new HashMap<String, Object>();
 		ECoWareMessageSender sender;
@@ -22,11 +20,9 @@ public class SenderTest {
 			sender = new ECoWareMessageSender("localhost", "BrowserInfo");
 			sender.startConnection();
 			while(true){
-
 				mapMsg.put("key", "105");
 				mapMsg.put("value", 1.0);
 				sender.send(mapMsg, ECoWareEventType.START_TIME, -1);
-				
 				mapMsg.put("key", "105");
 				mapMsg.put("value", 3.0);
 				sender.send(mapMsg, ECoWareEventType.END_TIME, -1);

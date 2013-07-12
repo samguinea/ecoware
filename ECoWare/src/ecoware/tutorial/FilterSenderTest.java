@@ -2,7 +2,6 @@ package ecoware.tutorial;
 
 import java.io.IOException;
 import java.util.HashMap;
-
 import ecoware.ecowareaccessmanager.ECoWareEventType;
 import ecoware.ecowareaccessmanager.ECoWareMessageSender;
 
@@ -18,11 +17,8 @@ public class FilterSenderTest {
 		System.out.println("Producer started...");
 		ECoWareMessageSender sender;
 		HashMap<String, Object> mapMsg = new HashMap<String, Object>();
-//		mapMsg.put("key", "105");
-//		mapMsg.put("value", 1.0);
 		int msgs = 10000;
 		int i = 0;
-		
 		try {
 			sender = new ECoWareMessageSender("localhost", "BrowserInfo");
 			sender.startConnection();

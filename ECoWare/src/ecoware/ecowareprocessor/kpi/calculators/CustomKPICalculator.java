@@ -5,18 +5,16 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareprocessor.kpi.KPIManager;
+import ecoware.util.*;
 
 /**
  * 
@@ -43,7 +41,6 @@ public class CustomKPICalculator extends KPIManager {
 	private ArrayList<String> esperStatements;
 	private ArrayList<String> eventNames;
 	private ArrayList<Map <String, Object>> eventMaps;
-	private final boolean DEBUG_MODE = false;
 
 	/**
 	 * Constructs a new CustomKPICalculator using the specified XML element. The bus server name (that is 
@@ -53,7 +50,6 @@ public class CustomKPICalculator extends KPIManager {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public CustomKPICalculator(Element xmlElement, String busServer, Configuration esperConfiguration) throws Exception {
-
 		super(xmlElement, busServer, esperConfiguration);
 		
 		kpiName = xmlElement.getElementsByTagName("calculator_name").item(0).getTextContent();
@@ -64,24 +60,23 @@ public class CustomKPICalculator extends KPIManager {
 		Node epl_statement;
 		Node statement;
 		if(epls.getLength() == 0) throw new Exception("No query found in xml file!");
-		for(int j = 0; j < epls.getLength(); j++){ 				// per ogni nodo EPL ricavo lista dei nodi
+		for(int j = 0; j < epls.getLength(); j++){
 			epl_statement = epls.item(j);		
-			for(int k=0; k < epl_statement.getChildNodes().getLength(); k++){ // per ogni figlio creo coppia (nome_statement, statement) e lo inserisco in una mappa
+			for(int k=0; k < epl_statement.getChildNodes().getLength(); k++){
 				statement = epl_statement.getChildNodes().item(k);
 				if(statement.getNodeType() == Node.ELEMENT_NODE){
-					System.out.println("------------------");
-					System.out.println("Element name: " + statement.getNodeName());
-					if(statement.getNodeName().toLowerCase().equals("query_statement")){ // è una query completa
-						//esperStatements.put("query_statement", statement.getTextContent());
+					Logger.logInfo("------------------");
+					Logger.logInfo("Element name: " + statement.getNodeName());
+					if(statement.getNodeName().toLowerCase().equals("query_statement")){
 						esperStatements.add(statement.getTextContent());
-						System.out.println("Value: " + statement.getTextContent());
+						Logger.logDebug("Value: " + statement.getTextContent());
 					}
 					else{
-						if(statement.getNodeName().toLowerCase().equals("composite_statement")){ // è una query da costruire
+						if(statement.getNodeName().toLowerCase().equals("composite_statement")){
 							LinkedHashMap<String, Object> query = new LinkedHashMap<String, Object>(0);
 							for(int i=0; i<statement.getChildNodes().getLength(); i++){
 								if(statement.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
-									if(DEBUG_MODE) System.out.println(statement.getChildNodes().item(i).getNodeName() + " " + statement.getChildNodes().item(i).getTextContent());
+									Logger.logDebug(statement.getChildNodes().item(i).getNodeName() + " " + statement.getChildNodes().item(i).getTextContent());
 									query.put(statement.getChildNodes().item(i).getNodeName(), statement.getChildNodes().item(i).getTextContent()); // aggiungo pezzo
 								}
 							}
@@ -108,7 +103,7 @@ public class CustomKPICalculator extends KPIManager {
 										default: throw new Exception("Not valid query statement: " + keyword);
 									}
 								}
-								System.out.println("Value: " + compositeQuery);
+								Logger.logDebug("Value: " + compositeQuery);
 								esperStatements.add(compositeQuery);
 							}
 						}
@@ -123,8 +118,7 @@ public class CustomKPICalculator extends KPIManager {
 		NodeList eventList = xmlElement.getElementsByTagName("event");
 		Element tempEvent;
 		if(eventList.getLength() == 0) throw new Exception("No events found in xml file!");	
-		for(int j = 0; j < eventList.getLength(); j++) {
-			
+		for(int j = 0; j < eventList.getLength(); j++) {			
 			tempEvent = (Element)eventList.item(j);
 			eventNames.add(tempEvent.getElementsByTagName("name").item(0).getTextContent());
 			eventMaps.add(getEventMap((Element)tempEvent.getElementsByTagName("map").item(0)));
@@ -132,15 +126,11 @@ public class CustomKPICalculator extends KPIManager {
 	}
 
 	private Map<String, Object> getEventMap(Element mapElement) {
-
-		Map<String, Object> eventMap = new HashMap<String, Object>();
-		
-		NodeList attributeList = mapElement.getElementsByTagName("attribute");
-		
+		Map<String, Object> eventMap = new HashMap<String, Object>();		
+		NodeList attributeList = mapElement.getElementsByTagName("attribute");		
 		String tempAttributeName, tempAttributeType;
 		
-		for(int i=0; i < attributeList.getLength(); i++) {
-			
+		for(int i=0; i < attributeList.getLength(); i++) {			
 			tempAttributeName = ((Element)attributeList.item(i)).getElementsByTagName("name").item(0).getTextContent();
 			tempAttributeType = ((Element)attributeList.item(i)).getElementsByTagName("type").item(0).getTextContent();
 			
@@ -155,8 +145,7 @@ public class CustomKPICalculator extends KPIManager {
 			
 			if(tempAttributeType.equals("String"))
 				eventMap.put(tempAttributeName, String.class);
-		}
-		
+		}		
 		return eventMap;
 	}
 
@@ -167,49 +156,10 @@ public class CustomKPICalculator extends KPIManager {
 	 * @throws Exception
 	 */
 	public void launch() throws Exception {
-
-		System.out.println("------------------");
-		System.out.println(kpiName + " calculator");
-        System.out.println("Initializing calculator...");
+		Logger.logInfo("------------------");
+		Logger.logInfo(kpiName + " calculator");
+		Logger.logInfo("Initializing calculator...");
         
-        if(DEBUG_MODE){
-        	System.out.println("------------------");
-        	System.out.println("PublicationID: " + getPublicationID());
-        	int i;
-        	if (!getSubscriptionIDs().isEmpty()) {
-        		System.out.println("------------------");
-        		i=0;
-        		for (String sub_id : getSubscriptionIDs()) {
-        			System.out.println("Subscription n." + (i+1) + ": " + sub_id);
-        			i++;
-        		}
-        	}
-
-        	if (!eventNames.isEmpty()) {
-        		i = 0;
-        		Map<String, Object> eventMap;
-        		Set<String> eventAttributes;
-        		for (String event : eventNames) {
-        			System.out.println("------------------");
-        			System.out.println("Event n." + (i+1) + ": " + event);
-        			System.out.println("Attributes:");
-        			eventMap = eventMaps.get(i);
-        			eventAttributes = eventMap.keySet();
-        			for (String attribute : eventAttributes)
-        				System.out.println("<" + attribute + ", " + eventMap.get(attribute) + ">");
-        			i++;
-        		}
-        		System.out.println("------------------");
-        	}
-
-        	if (!esperStatements.isEmpty()) {
-        		System.out.println("------------------");
-        		for(String stmt: esperStatements)
-        			System.out.println("Statement: " + stmt);
-        	}
-        	System.out.println("------------------");
-        }
-		
         //ESPER configuration
 		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
 
@@ -223,7 +173,6 @@ public class CustomKPICalculator extends KPIManager {
 			tempStatement = epService.getEPAdministrator().createEPL(esperStatements.get(k));
 		
 		tempStatement.addListener(new KPIEventListener(kpiName, getPublicationID(), getBusServer(), kpiId));
-
-    	System.out.println("Calculator initialized");
+		Logger.logInfo("Calculator initialized");
 	}
 }

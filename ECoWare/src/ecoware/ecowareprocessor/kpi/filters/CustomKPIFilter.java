@@ -2,15 +2,13 @@ package ecoware.ecowareprocessor.kpi.filters;
 
 import ecoware.ecowareprocessor.eventlisteners.KPIEventListener;
 import ecoware.ecowareprocessor.kpi.KPIManager;
-
+import ecoware.util.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
-
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
@@ -37,7 +35,6 @@ public class CustomKPIFilter extends KPIManager {
 	private String filterName;
 	private String eventName;
 	private ArrayList<String> esperStatements;
-	private final boolean DEBUG_MODE = false;
 	
 	/**
 	 * Constructs a new CustomKPIFilter using the specified XML element. The bus server name (that is 
@@ -47,7 +44,6 @@ public class CustomKPIFilter extends KPIManager {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public CustomKPIFilter(Element xmlElement, String busServer, Configuration esperConfiguration) throws Exception {
-
 		super(xmlElement, busServer, esperConfiguration);
 
 		filterName = xmlElement.getElementsByTagName("filter_name").item(0).getTextContent();
@@ -59,23 +55,23 @@ public class CustomKPIFilter extends KPIManager {
 		Node epl_statement;
 		Node statement;
 		if(epls.getLength() == 0) throw new Exception("No query found in xml file!");
-		for(int j = 0; j < epls.getLength(); j++){ 				// per ogni nodo EPL ricavo lista dei nodi
+		for(int j = 0; j < epls.getLength(); j++){ 
 			epl_statement = epls.item(j);		
-			for(int k=0; k < epl_statement.getChildNodes().getLength(); k++){ // per ogni figlio creo coppia (nome_statement, statement) e lo inserisco in una mappa
+			for(int k=0; k < epl_statement.getChildNodes().getLength(); k++){ 
 				statement = epl_statement.getChildNodes().item(k);
 				if(statement.getNodeType() == Node.ELEMENT_NODE){
-					System.out.println("------------------");
-					System.out.println("Element name: " + statement.getNodeName());
-					if(statement.getNodeName().toLowerCase().equals("query_statement")){ // è una query completa
+					Logger.logInfo("------------------");
+					Logger.logInfo("Element name: " + statement.getNodeName());
+					if(statement.getNodeName().toLowerCase().equals("query_statement")){ 
 						esperStatements.add(statement.getTextContent());
-						System.out.println("Value: " + statement.getTextContent());
+						Logger.logDebug("Value: " + statement.getTextContent());
 					}
 					else{
-						if(statement.getNodeName().toLowerCase().equals("composite_statement")){ // è una query da costruire
+						if(statement.getNodeName().toLowerCase().equals("composite_statement")){ 
 							LinkedHashMap<String, Object> query = new LinkedHashMap<String, Object>(0);
 							for(int i=0; i<statement.getChildNodes().getLength(); i++){
 								if(statement.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE){
-									if(DEBUG_MODE) System.out.println(statement.getChildNodes().item(i).getNodeName() + " " + statement.getChildNodes().item(i).getTextContent());
+									Logger.logDebug(statement.getChildNodes().item(i).getNodeName() + " " + statement.getChildNodes().item(i).getTextContent());
 									query.put(statement.getChildNodes().item(i).getNodeName(), statement.getChildNodes().item(i).getTextContent()); // aggiungo pezzo
 								}
 							}
@@ -102,7 +98,7 @@ public class CustomKPIFilter extends KPIManager {
 										default: throw new Exception("Not valid query statement: " + keyword);
 									}
 								}
-								System.out.println("Value: " + compositeQuery);
+								Logger.logDebug("Value: " + compositeQuery);
 								esperStatements.add(compositeQuery);
 							}
 						}
@@ -116,42 +112,18 @@ public class CustomKPIFilter extends KPIManager {
 	/**
 	 * This method actually starts the "Custom" filter.<br/>
 	 */
-	public void launch() {
-		
-		System.out.println("------------------");
-		System.out.println("Initializing " + filterName + " filter...");
-		
-		if(DEBUG_MODE){
-        	System.out.println("------------------");
-        	System.out.println("PublicationID: " + getPublicationID());
-        	int i;
-        	if (!getSubscriptionIDs().isEmpty()) {
-        		System.out.println("------------------");
-        		i=0;
-        		for (String sub_id : getSubscriptionIDs()) {
-        			System.out.println("Subscription n." + (i+1) + ": " + sub_id);
-        			i++;
-        		}
-        	}
-
-        	if (!esperStatements.isEmpty()) {
-        		System.out.println("------------------");
-        		for(String stmt: esperStatements)
-        			System.out.println("Statement: " + stmt);
-        	}
-        	System.out.println("------------------");
-        }
+	public void launch() {		
+		Logger.logInfo("------------------");
+		Logger.logInfo("Initializing " + filterName + " filter...");
 		
 		//ESPER configuration
-		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());
-		
+		EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(getEsperConfiguration());		
 		EPStatement tempStatement = null;
 
 		for(int i=0; i < esperStatements.size(); i++)
 			tempStatement = epService.getEPAdministrator().createEPL(esperStatements.get(i));
 		
-		tempStatement.addListener(new KPIEventListener(eventName, getPublicationID(), getBusServer()));
-		
-		System.out.println("Filter initialized");
+		tempStatement.addListener(new KPIEventListener(eventName, getPublicationID(), getBusServer()));		
+		Logger.logInfo("Filter initialized");
 	}
 }

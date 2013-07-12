@@ -2,12 +2,11 @@ package ecoware.ecowareprocessor.eventlisteners;
 
 import java.util.HashMap;
 import java.util.Iterator;
-
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.UpdateListener;
-
 import ecoware.ecowareaccessmanager.ECoWareEventType;
 import ecoware.ecowareaccessmanager.ECoWareMessageSender;
+import ecoware.util.*;
 
 /**
  * 
@@ -17,8 +16,7 @@ import ecoware.ecowareaccessmanager.ECoWareMessageSender;
  * For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation.
  *
  */
-public class KPIEventListener implements UpdateListener {
-	
+public class KPIEventListener implements UpdateListener {	
 	private String kpiName;
 	private String kpiType;
 	private String publicationID;
@@ -42,8 +40,7 @@ public class KPIEventListener implements UpdateListener {
 	 * @param publicationID the KPI publication ID
 	 * @param busServer the hostname on which the bus server is running.
 	 */
-	public KPIEventListener(String kpiName, String publicationID, String busServer, int kpiId) {
-		
+	public KPIEventListener(String kpiName, String publicationID, String busServer, int kpiId) {		
 		this.kpiName = kpiName;
 		this.kpiType = ECoWareEventType.getEventType(kpiName).getValue();
 		this.publicationID = publicationID;
@@ -57,8 +54,7 @@ public class KPIEventListener implements UpdateListener {
 	 * update the application/system state in reaction of the arrivals of new Esper events.<br/>
 	 * For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation.
 	 */
-	public void update(EventBean[] newEvents, EventBean[] oldEvents) {
-		
+	public void update(EventBean[] newEvents, EventBean[] oldEvents) {		
 		EventBean tempEvent;
 		HashMap<String, Object> eventMap, tempMap;
 		Iterator<String> tempIterator;
@@ -67,7 +63,6 @@ public class KPIEventListener implements UpdateListener {
     	ECoWareEventType eventType = null;
 
     	for(int i = 0; i < newEvents.length; i++) {
-
 			tempEvent = newEvents[i];
 
 		    eventMap = new HashMap<String, Object>();
@@ -78,21 +73,20 @@ public class KPIEventListener implements UpdateListener {
 
 			tempMap = (HashMap<String, Object>) tempEvent.getUnderlying();
 			tempIterator = tempMap.keySet().iterator();
-			System.out.println("**********************************************************");
-			System.out.println("Event Type: " + kpiType);
-			System.out.println("Event Name: " + kpiName);
+			Logger.logInfo("**********************************************************");
+			Logger.logInfo("Event Type: " + kpiType);
+			Logger.logInfo("Event Name: " + kpiName);
 
-			while(tempIterator.hasNext()) {
-		    		
+			while(tempIterator.hasNext()) {		    		
 				tempAttributeName = tempIterator.next();
 				tempAttributeValue = tempMap.get(tempAttributeName);
 				
-				System.out.println("Att.Name: " + tempAttributeName + "  Att.Value: " + tempAttributeValue);
+				Logger.logInfo("Att.Name: " + tempAttributeName + "  Att.Value: " + tempAttributeValue);
 			
 				if(!tempAttributeName.equals("originID"))
 					eventMap.put(tempAttributeName, tempAttributeValue);
 			}
-			System.out.println("**********************************************************");
+			Logger.logInfo("**********************************************************");
 		    try {
 		    	eventType = ECoWareEventType.getEventType(this.kpiType);
 				ecowareSender.startConnection();

@@ -1,9 +1,7 @@
 package ecoware.ecowareprocessor.kpi;
 
 import java.util.ArrayList;
-
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 
 /**
@@ -16,7 +14,6 @@ import com.espertech.esper.client.Configuration;
  * the <a href="ECoWareProcessor.html">ECoWareProcessor</a> object.
  */
 public abstract class KPIManager {
-
 	private ArrayList<String> subscriptionIDs;
 	private String publicationID;
 	private String busServer;
@@ -29,15 +26,13 @@ public abstract class KPIManager {
 	 * @param busServer the hostname on which the bus server is running
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
-	public KPIManager(Element xmlElement, String busServer, Configuration esperConfiguration) {
-		
+	public KPIManager(Element xmlElement, String busServer, Configuration esperConfiguration) {		
 		subscriptionIDs = new ArrayList<String>();
 		
 		for(int i = 0; i < xmlElement.getElementsByTagName("subscriptID").getLength(); i++)
 			subscriptionIDs.add(xmlElement.getElementsByTagName("subscriptID").item(i).getTextContent());
 
-		publicationID = xmlElement.getElementsByTagName("publicationID").item(0).getTextContent();
-		
+		publicationID = xmlElement.getElementsByTagName("publicationID").item(0).getTextContent();		
 		this.busServer = busServer;
 		this.esperConfiguration = esperConfiguration;
 	}
@@ -47,7 +42,6 @@ public abstract class KPIManager {
 	 * @return the subscribe keys list
 	 */
 	public ArrayList<String> getSubscriptionIDs() {
-
 		return subscriptionIDs;
 	}
 	
@@ -55,8 +49,7 @@ public abstract class KPIManager {
 	 * Returns the publication ID.
 	 * @return the publication ID.
 	 */
-	public String getPublicationID() {
-		
+	public String getPublicationID() {		
 		return publicationID;
 	}
 	
@@ -65,7 +58,6 @@ public abstract class KPIManager {
 	 * @return the ECoWare bus server
 	 */
 	public String getBusServer() {
-
 		return busServer;
 	}
 	
@@ -74,7 +66,6 @@ public abstract class KPIManager {
 	 * @return the Esper configuration
 	 */
 	public Configuration getEsperConfiguration() {
-
 		return esperConfiguration;
 	}
 	

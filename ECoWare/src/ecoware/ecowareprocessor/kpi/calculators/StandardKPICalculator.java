@@ -1,9 +1,7 @@
 package ecoware.ecowareprocessor.kpi.calculators;
 
 import ecoware.ecowareprocessor.kpi.KPIManager;
-
 import org.w3c.dom.Element;
-
 import com.espertech.esper.client.Configuration;
 
 /**
@@ -24,7 +22,6 @@ import com.espertech.esper.client.Configuration;
  *
  */
 public abstract class StandardKPICalculator extends KPIManager {
-
 	private String intervalUnit;
 	private int intervalValue;
 	private String outputUnit;
@@ -38,7 +35,6 @@ public abstract class StandardKPICalculator extends KPIManager {
 	 * @param esperConfiguration the Esper current configuration (that is an Configuration object. For further detail see the <a href="http://esper.codehaus.org/" target="_blank">Esper</a> documentation).
 	 */
 	public StandardKPICalculator(Element xmlElement, String busServer, Configuration esperConfiguration) {
-		
 		super(xmlElement, busServer, esperConfiguration);
 		
 		Element computation = (Element)xmlElement.getElementsByTagName("computation").item(0);
