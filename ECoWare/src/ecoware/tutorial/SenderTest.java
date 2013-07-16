@@ -27,7 +27,7 @@ public class SenderTest {
 				mapMsg.put("key", "105");
 				mapMsg.put("value", 3.0);
 				sender.send(mapMsg, ECoWareEventType.END_TIME, -1);
-				Thread.sleep(20);
+				Thread.sleep(10);
 				mapMsg.put("key", "105");
 				mapMsg.put("value", 2.0);
 				sender.send(mapMsg, ECoWareEventType.START_TIME, -1);
