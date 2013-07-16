@@ -31,22 +31,22 @@ public class DBTimeSenderTest {
 				sender.send(mapMsg, ECoWareEventType.END_DBTIME, -1);
 
 				mapMsg.put("key", "105");
-				mapMsg.put("value", 1.5);
+				mapMsg.put("value", 2.0);
 				mapMsg.put("instanceId", "test");
 				sender.send(mapMsg, ECoWareEventType.START_DBTIME, -1);
 				
 				mapMsg.put("key", "105");
-				mapMsg.put("value", 2.8);
+				mapMsg.put("value", 3.0);
 				mapMsg.put("instanceId", "test");
 				sender.send(mapMsg, ECoWareEventType.END_DBTIME, -1);
 
 				mapMsg.put("key", "105");
-				mapMsg.put("value", 1.25);
+				mapMsg.put("value", 2.0);
 				mapMsg.put("instanceId", "test");
 				sender.send(mapMsg, ECoWareEventType.START_DBTIME, -1);
 				
 				mapMsg.put("key", "105");
-				mapMsg.put("value", 3.8);
+				mapMsg.put("value", 4.0);
 				mapMsg.put("instanceId", "test");
 				sender.send(mapMsg, ECoWareEventType.END_DBTIME, -1);
 
