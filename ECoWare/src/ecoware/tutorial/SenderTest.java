@@ -32,7 +32,7 @@ public class SenderTest {
 				mapMsg.put("value", 2.0);
 				sender.send(mapMsg, ECoWareEventType.START_TIME, -1);
 				mapMsg.put("key", "105");
-				mapMsg.put("value", 3.5);
+				mapMsg.put("value", 5.0);
 				sender.send(mapMsg, ECoWareEventType.END_TIME, -1);
 				Thread.sleep(100);
 			}
