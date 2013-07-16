@@ -5,7 +5,7 @@ The probing phase is achieved by means a publish-subscribe process, where data a
 
 For more details on ECoWare specification, you can read this [paper](http://home.deib.polimi.it/guinea/ECoWare/icws2013.pdf).
 
-In our current implementation, ECoWare is composed by two main module: the first is "ECoWare Access Manager" (_ecowareaccessmanager _package), that is the module that make transparent to the user the usage of the bus for sending and receiving data, and the second is "ECoWare Processor" (_ecowareprocessor _package), that is a set of "KPI objects", such as "Calculators", "Filters" and "Aggregators", that can be used to realize your analysis process.
+In our current implementation, ECoWare is composed by two main module: the first is "ECoWare Access Manager" (<i>ecowareaccessmanager</i> package), that is the module that make transparent to the user the usage of the bus for sending and receiving data, and the second is "ECoWare Processor" (<i>ecowareprocessor</i> package), that is a set of "KPI objects", such as "Calculators", "Filters" and "Aggregators", that can be used to realize your analysis process.
 
 In this "ECoWare wiki" we present to you all the main aspects regarding to its implementation and its utilization for the end-user.
 
