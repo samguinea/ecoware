@@ -108,7 +108,7 @@ public class ECoWareProcessor {
 		for(int i=0; i<aggregatorList.getLength(); i++){
 			kpiElement = (Element) aggregatorList.item(i);
 			Logger.logDebug("Element: " + kpiElement.getElementsByTagName("name").item(0).getTextContent() + " created!");
-			kpi = new Aggregator_Draft(kpiElement, busServer, esperConfiguration);
+			kpi = new Aggregator(kpiElement, busServer, esperConfiguration);
 			subscriptions.addAll(kpi.getSubscriptionIDs());
 			kpi.launch();
 		}		

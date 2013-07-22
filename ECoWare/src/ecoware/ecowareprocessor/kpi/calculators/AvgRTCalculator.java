@@ -28,8 +28,8 @@ import com.espertech.esper.client.EPStatement;
  * <a href="StandardKPICalculator.html">StandardKPICalculator</a> for more details on it), it sends on the bus an 
  * "AVGRT_EVENT" event that contains data relative to the calculated average response time.<br/><br/>
  * 
- * In ECoWare (and Esper too) an event is modeled as a “HashMap<String, Object>”, so its content is a set 
- * of “<key, value>” pairs. Each event has its specific map that is required to make possible their correct usage 
+ * In ECoWare (and Esper too) an event is modeled as a "HashMap&lt;String, Object&gt;", so its content is a set 
+ * of "&lt;key, value&gt;" pairs. Each event has its specific map that is required to make possible their correct usage 
  * during analysis processes. <br/><br/>
  * 
  * As said, the <i>"Average Response Time"</i> calculator requires in input </i>"START_TIME"</i> and </i>"END_TIME"</i> 
@@ -42,8 +42,8 @@ import com.espertech.esper.client.EPStatement;
  *  <LI>&lt;"value", long.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “key” and its type is “String”, while the name
- * of the second element of the map is “value” and its type is “long”.
+ * that is, the name of the first element of the map is "key" and its type is "String", while the name
+ * of the second element of the map is "value" and its type is "long".
  * 
  * The same is for a <b>"END_TIME"</b> event.<br/><br/>
  * 
@@ -52,11 +52,12 @@ import com.espertech.esper.client.EPStatement;
  *  <LI>&lt;"timestamp", long.class&gt;
  *  <LI>&lt;"avg", double.class&gt;
  *  <LI>&lt;"stddev", long.class&gt;
+ *  <LI>&lt;"source", String.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “timestamp” and its type is “long”, the name
- * of the second element of the map is “avg” and its type is “double” and the name of the third element 
- * of the map is “stddev” and its type is “long”.<br/><br/>
+ * that is, the name of the first element of the map is "timestamp" and its type is "long", the name
+ * of the second element of the map is "avg" and its type is "double" and the name of the third element 
+ * of the map is "stddev" and its type is "long". The last element of the map is "source" and its type is "String".<br/><br/>
  * 
  * For a more detailed presentation of these concepts, see the provided <a href="">tutorials </a>section of the ECoWare documentation.
  *
@@ -99,12 +100,13 @@ public class AvgRTCalculator extends StandardKPICalculator {
 	    filterMap.put("timestamp", long.class);
 	    filterMap.put("avg", double.class);
 	    filterMap.put("stddev", long.class);
+	    filterMap.put("source", String.class);
 
 		epService.getEPAdministrator().getConfiguration().addEventType(ECoWareEventType.AVGRT_EVENT.getValue(), filterMap);
 
 		//EPL creation
 		//ESPER statement generation
-		String esperStatement = "SELECT AVG(et.value - st.value) AS avg, stddev(et.value - st.value) as stddev, current_timestamp() AS timestamp " +
+		String esperStatement = "SELECT AVG(et.value - st.value) AS avg, stddev(et.value - st.value) as stddev, current_timestamp() AS timestamp, '"+getPublicationID()+"' as source " +
 			"FROM StartTime.win:time(" + getIntervalValue() + " " + getIntervalUnit() + ") AS st, " +
 				"EndTime.win:time(" + getIntervalValue() + " " + getIntervalUnit() + ") AS et " +
 			"WHERE st.key like et.key " +

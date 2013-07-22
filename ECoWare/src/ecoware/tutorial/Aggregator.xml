@@ -1,26 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecoware>
 	<ecowareAccessManagerUrl>localhost</ecowareAccessManagerUrl>
+	
+	<Calculator>
+		<name>AvgRT</name>
+		<subscriptID>BrowserInfo</subscriptID>
+		<publicationID>AvgRT_Browser</publicationID>
+		<computation>
+			<intervalUnit>seconds</intervalUnit>
+			<intervalValue>20</intervalValue>
+			<outputUnit>seconds</outputUnit>
+			<outputValue>5</outputValue>
+		</computation>
+	</Calculator>
+	
+	<Calculator>
+		<name>ArrivalRate</name>
+		<subscriptID>SystemInfo</subscriptID>
+		<publicationID>ArrivalRate_System</publicationID>
+		<computation>
+			<intervalUnit>minutes</intervalUnit>
+			<intervalValue>1</intervalValue>
+			<outputUnit>seconds</outputUnit>
+			<outputValue>10</outputValue>
+		</computation>
+	</Calculator>
+	<Calculator>
+		<name>ArrivalRate</name>
+		<subscriptID>SystemInfo2</subscriptID>
+		<publicationID>ArrivalRate_System2</publicationID>
+		<computation>
+			<intervalUnit>minutes</intervalUnit>
+			<intervalValue>1</intervalValue>
+			<outputUnit>seconds</outputUnit>
+			<outputValue>20</outputValue>
+		</computation>
+	</Calculator>
+	
 	<Aggregator>
-		<name>AggregatorName</name>
-		<publicationID>AggregatorInfo_ID</publicationID>
+		<name>AvgAggregator</name>
+		<publicationID>AvgAggregator_Probe</publicationID>
 				
 		<primaryEvent>
 		    <primaryEventName>AvgRT</primaryEventName>
-		    <subscriptID>avgRT_Browser</subscriptID>
+		    <primaryEventKey>avg</primaryEventKey>
+		    <subscriptID>AvgRT_Browser</subscriptID>
 		</primaryEvent>
 		
 		<secondaryEvent>
 		    <secondaryEventName>ArrivalRate</secondaryEventName>
-		    <subscriptID>ArrivalRate_Browser</subscriptID>
-		    <intervalUnit>minutes</intervalUnit>
-		    <intervalValue>1</intervalValue>
+		    <secondaryEventKey>value</secondaryEventKey>
+		    <subscriptID>ArrivalRate_System</subscriptID>
+		    <intervalUnit>seconds</intervalUnit>
+		    <intervalValue>20</intervalValue>
 		</secondaryEvent>
 		<secondaryEvent>
 		    <secondaryEventName>ArrivalRate</secondaryEventName>
-		    <subscriptID>ArrivalRate_Browser2</subscriptID>
-		    <intervalUnit>minutes</intervalUnit>
-		    <intervalValue>1</intervalValue>
+		    <secondaryEventKey>value</secondaryEventKey>
+		    <subscriptID>ArrivalRate_System2</subscriptID>
+		    <intervalUnit>seconds</intervalUnit>
+		    <intervalValue>20</intervalValue>
 		</secondaryEvent>
 		
 	</Aggregator>

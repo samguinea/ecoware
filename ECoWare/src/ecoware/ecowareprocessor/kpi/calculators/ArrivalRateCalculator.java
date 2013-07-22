@@ -27,8 +27,8 @@ import com.espertech.esper.client.EPStatement;
  * see <a href="StandardKPICalculator.html">StandardKPICalculator</a> for more details on it), it sends on the bus 
  * an "ARRIVALRATE_EVENT" event that contains data relative to the calculated arrival rate (that is, the count).
  * 
- * In ECoWare (and Esper too) an event is modeled as a “HashMap<String, Object>”, so its content is a set 
- * of “<key, value>” pairs. Each event has its specific map that is required to make possible their correct usage 
+ * In ECoWare (and Esper too) an event is modeled as a "HashMap&lt;String, Object&gt;", so its content is a set 
+ * of "&lt;key, value&gt;" pairs. Each event has its specific map that is required to make possible their correct usage 
  * during analysis processes. <br/><br/>
  * 
  * As said, the <i>"Arrival Rate"</i> calculator requires in input (a set of) </i>"START_TIME"</i> events (the start 
@@ -41,17 +41,18 @@ import com.espertech.esper.client.EPStatement;
  *  <LI>&lt;"value", long.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “key” and its type is “String”, while the name
- * of the second element of the map is “value” and its type is “long”.
+ * that is, the name of the first element of the map is "key" and its type is "String", while the name
+ * of the second element of the map is "value" and its type is "long".
  * 
  * An <b>"ARRIVALRATE_EVENT"</b> event is defined by this map:
  * <UL>
  *  <LI>&lt;"timestamp", long.class&gt;
  *  <LI>&lt;"value", double.class&gt;
+ *  <LI>&lt;"source", String.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “timestamp” and its type is “long”, while the name
- * of the second element of the map is “value” and its type is “double”.<br/><br/>
+ * that is, the name of the first element of the map is "timestamp" and its type is "long", while the name
+ * of the second element of the map is "value" and its type is "double". The last element of the map is "source" and its type is "String".<br/><br/>
  * 
  * For a more detailed presentation of these concepts, see the provided <a href="">tutorials </a>section of the ECoWare documentation.
  * 
@@ -93,12 +94,13 @@ public class ArrivalRateCalculator extends StandardKPICalculator {
 	    Map<String, Object> filterMap = new HashMap<String, Object>();
 	    filterMap.put("timestamp", long.class);
 	    filterMap.put("value", double.class);
+	    filterMap.put("source", String.class);
 
 		epService.getEPAdministrator().getConfiguration().addEventType(ECoWareEventType.ARRIVALRATE_EVENT.getValue(), filterMap);
 
 		//EPL creation
 		//ESPER statement generation
-		String esperStatement = "SELECT COUNT(*) AS value, current_timestamp() AS timestamp " +
+		String esperStatement = "SELECT COUNT(*) AS value, current_timestamp() AS timestamp, '"+getPublicationID()+"' as source " +
 				"FROM StartTime.win:time(" + getIntervalValue() + " " + getIntervalUnit() + ") " +
 				"OUTPUT SNAPSHOT EVERY " + getOutputValue() + " " + getOutputUnit();
 

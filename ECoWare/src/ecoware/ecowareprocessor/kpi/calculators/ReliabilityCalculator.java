@@ -34,8 +34,8 @@ import com.espertech.esper.client.EPStatement;
  * <a href="StandardKPICalculator.html">StandardKPICalculator</a> for more details on it), it sends on the bus an 
  * "RELIABILITY_EVENT" event that contains data relative to the estimated reliability in terms of "completed_task/total_task" ratio.<br/><br/>
  * 
- * In ECoWare (and Esper too) an event is modeled as a “HashMap<String, Object>”, so its content is a set 
- * of “<key, value>” pairs. Each event has its specific map that is required to make possible their correct usage 
+ * In ECoWare (and Esper too) an event is modeled as a "HashMap&lt;String, Object&gt;", so its content is a set 
+ * of "&lt;key, value&gt;" pairs. Each event has its specific map that is required to make possible their correct usage 
  * during analysis processes. <br/><br/>
  * 
  * As said, the <i>"Reliability"</i> calculator requires in input </i>"START_TIME"</i> and </i>"END_TIME"</i> 
@@ -48,8 +48,8 @@ import com.espertech.esper.client.EPStatement;
  *  <LI>&lt;"timestamp", long.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “key” and its type is “String”, while the name
- * of the second element of the map is “timestamp” and its type is “long”.
+ * that is, the name of the first element of the map is "key" and its type is "String", while the name
+ * of the second element of the map is "timestamp" and its type is "long".
  * 
  * The same is for a <b>"END_TIME"</b> event.<br/><br/>
  * 
@@ -57,10 +57,11 @@ import com.espertech.esper.client.EPStatement;
  * <UL>
  *  <LI>&lt;"timestamp", long.class&gt;
  *  <LI>&lt;"value", double.class&gt;
+ *  <LI>&lt;"source", String.class&gt;
  * </UL>
  * <br/>
- * that is, the name of the first element of the map is “timestamp” and its type is “long”, while the name
- * of the second element of the map is “value” and its type is “double”.<br/><br/>
+ * that is, the name of the first element of the map is "timestamp" and its type is "long", while the name
+ * of the second element of the map is "value" and its type is "double". The last element of the map is "source" and its type is "String".<br/><br/>
  * 
  * For a more detailed presentation of these concepts, see the provided <a href="">tutorials </a>section of the ECoWare documentation.
  *
@@ -107,6 +108,7 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 	    Map<String, Object> filterMap = new HashMap<String, Object>();
 		filterMap.put("timestamp", long.class);
 	    filterMap.put("value", double.class);
+	    filterMap.put("source", String.class);
 
 		epService.getEPAdministrator().getConfiguration().addEventType(ECoWareEventType.RELIABILITY_EVENT.getValue(), filterMap);
 
@@ -136,7 +138,7 @@ public class ReliabilityCalculator extends StandardKPICalculator {
 
 		epService.getEPAdministrator().createEPL(esperStatement);
 
-		esperStatement = "SELECT (completed / total) AS value, current_timestamp() AS timestamp " +
+		esperStatement = "SELECT (completed / total) AS value, current_timestamp() AS timestamp, '"+getPublicationID()+"' as source " +
 			"FROM TotalTxs, " +
 				"CompletedTxs " +
 			"OUTPUT SNAPSHOT EVERY " + getOutputValue() + " " + getOutputUnit();
