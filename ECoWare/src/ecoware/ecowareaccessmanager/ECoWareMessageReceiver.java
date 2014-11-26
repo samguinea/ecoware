@@ -81,6 +81,8 @@ public class ECoWareMessageReceiver {
 		// Create connection elements
 		this.factory = new ConnectionFactory();
 		this.factory.setHost(this.host);
+		this.factory.setUsername("ecoware_admin");
+		this.factory.setPassword("greenlight");
 		this.connection = factory.newConnection();
 		this.channel = connection.createChannel();	
 	}
@@ -158,15 +160,20 @@ public class ECoWareMessageReceiver {
 		Map<String, Object> messageBody = (Map<String, Object>) in.readObject();
 		int eventId = -1;
 		
-		if(ECoWareEventType.getEventType(hdr.get("eventType").toString()) != ECoWareEventType.CUSTOM_EVENT){
-			ECoWareEventType eventType = ECoWareEventType.getEventType(hdr.get("eventType").toString());
-			if(eventType.equals(ECoWareEventType.SECONDAY_AGGREGATION)) eventId = (int) hdr.get("eventID");
-			msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventType, eventId);
+		if (!hdr.containsKey("eventType")) {
+			msg = new ECoWareMessage(publisherId, messageBody, timestamp, ECoWareEventType.CUSTOM_EVENT, eventId);
 		}
-		else{
-			String eventName = hdr.get("eventName").toString();
-			eventId = (int) hdr.get("eventID");
-			msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventName, eventId);
+		else {
+			if(ECoWareEventType.getEventType(hdr.get("eventType").toString()) != ECoWareEventType.CUSTOM_EVENT){
+				ECoWareEventType eventType = ECoWareEventType.getEventType(hdr.get("eventType").toString());
+				if(eventType.equals(ECoWareEventType.SECONDAY_AGGREGATION)) eventId = (int) hdr.get("eventID");
+				msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventType, eventId);
+			}
+			else{
+				String eventName = hdr.get("eventName").toString();
+				eventId = (int) hdr.get("eventID");
+				msg = new ECoWareMessage(publisherId, messageBody, timestamp, eventName, eventId);
+			}
 		}
 		return msg;
 	}
